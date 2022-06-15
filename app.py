@@ -6,8 +6,8 @@ import pyglet as pg
 import cv2
 
 # font
-pg.font.add_file('fonts//Poppins-Bold.ttf')
-pg.font.add_file('fonts//Poppins-Regular.ttf')
+pg.font.add_file('fonts/Poppins-Bold.ttf')
+pg.font.add_file('fonts/Poppins-Regular.ttf')
 
 # styles
 bg_color = "#186178"
