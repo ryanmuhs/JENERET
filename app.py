@@ -4,6 +4,7 @@ import tkinter.filedialog as fd
 import tkinter.messagebox as mb
 import pyglet as pg
 import cv2
+import os
 
 # font
 pg.font.add_file('fonts//Poppins-Bold.ttf')
@@ -22,9 +23,9 @@ root.geometry("500x500")
 root.configure(bg=bg_color)
 root.title("JENERET Certificate Generator")
 
-judulApp = Label(root, text="JENERET", font=(font_title, 18), fg=fg_color, bg=bg_color)
-judulApp.grid(column=0, row=0)
-judulApp.place(relx=0.5, rely=0.1, anchor=CENTER)
+titleApp = Label(root, text="JENERET", font=(font_title, 18), fg=fg_color, bg=bg_color)
+titleApp.grid(column=0, row=0)
+titleApp.place(relx=0.5, rely=0.1, anchor=CENTER)
 
 descApp = Label(root, text="Certificate Generator", font=(font_common, 15), fg=fg_color, bg=bg_color)
 descApp.grid(column=0, row=0)
@@ -33,83 +34,76 @@ descApp.place(relx=0.5, rely=0.17, anchor=CENTER)
 # input file
 def inputcert():
     try:
-        template_cert = fd.askopenfilename(initialdir="\\coba-2", 
-                                        title="Pilih soal", 
+        template_cert = fd.askopenfilename(initialdir="/", 
+                                        title="Choose template", 
                                         filetypes=[("PNG", "*.png"),
                                         ("All Files", "*.*")])
-        Label(root, text=template_cert, font=(font_common, 7), bg=bg_color, fg=fg_color).place(relx=.12, rely=.3)
+        Label(root, text=template_cert, font=(font_common, 7), bg=bg_color, fg=fg_color, width=50).place(relx=.05, rely=.3)
     except FileNotFoundError:
-        print("Filenya ga ada :D")
+        print("File not found :(")
     else:
         return template_cert
 
 # input nama
+listName = []
 def inputname():
-    try:
-        inputNama = fd.askopenfilename(initialdir="\\",
-                                    title="Pilih soal", 
-                                    filetypes=[("Text Document", "*.txt"),
-                                    ("All Files", "*.*")])
-        Label(root, text=inputNama, font=2, bg=bg_color, fg=fg_color).pack(side=RIGHT)
-    except:
-        mb.showerror("JENERET | Error","Filenya ga ada :D")
+    # try:
+    inputNama = fd.askopenfilename(initialdir="/",
+                                title="List Nama...", 
+                                filetypes=[("Text Document", "*.txt"),
+                                ("All Files", "*.*")])
+    # Label(root, text=inputNama, font=(font_common, 7), bg=bg_color, fg=fg_color, width=100).pack(side=RIGHT)
+    Label(root, text=inputNama, font=(font_common, 7), bg=bg_color, fg=fg_color, width=50).place(relx=.05, rely=.5)
+    return inputNama
+    # except:
+        # mb.showerror("JENERET | Error","Something error")
 
-# simpen serti
-def savecert():
-    try:
-        dirpath = fd.askdirectory(initialdir="/",title="Simpan di..")
-        labelDirpath = Label(root, text=dirpath, font=(font_common, 10), fg=fg_color)
-        labelDirpath.grid(column=1, row=1)
-        labelDirpath.place(relx=.3, rely=.8)
-    except FileExistsError:
-        mb.showerror("JENERET | Error", "File tidak ada!")
-
-# bagian penting
-listNama = []
-
-# clean strip
-def cleanup_data():
+def cleanup_data():  
     with open(inputname()) as f:
         for line in f:
-            listNama.append(line.strip())
+            listName.append(line)
 
 # generate!
 def generate_cert():
-
-    for index, name in enumerate(listNama):
+    # cleanup_data()
+    for name in enumerate(listName):
         certificate_template_image = cv2.imread()
         cv2.putText(certificate_template_image, name.strip(), (470,514), cv2.FONT_HERSHEY_DUPLEX, 2.5, (0, 0, 0), 5, cv2.LINE_AA)
-        cv2.imwrite(f"{savecert}/{name.strip()}.png", certificate_template_image)
-        print(f"Processing {index+1} / {len(listNama)}")
+        cv2.imwrite(f"generated-cert/{name.strip()}.png", certificate_template_image)
+        # print(f"Processing {index+1} / {len(listName)}")
 
 # keluar
-def keluar():
-    konfirmasi = mb.askyesno("Mau keluar?", "Mau keluar?")
+def exit():
+    konfirmasi = mb.askyesno("JENERET | Exit?", "Want to exit?")
     if konfirmasi:
         root.destroy()
 
 # template serti
-btnFile = Button(root, text="Pilih file...", font=(font_title, 10), command=inputcert, width=15)
-btnFile.grid(column=0, row=1)
-btnFile.place(relx=.6, rely=.3)
+labelTemplate = Label(root, text="Insert certificate template", font=(font_title, 10), bg=bg_color, fg=fg_color)
+labelTemplate.place(relx=.05, rely=.25)
+btnList = Button(root, text="Choose file...", font=(font_title, 10), command=inputcert, width=15)
+btnList.grid(column=0, row=1)
+btnList.place(relx=.6, rely=.3)
 
 # list nama
-btnNama = Button(root, text="List Nama...", font=(font_title, 10), command=inputname, width=15)
+labelName = Label(root, text="Insert names", font=(font_title, 10), bg=bg_color, fg=fg_color)
+labelName.place(relx=.05, rely=.43)
+btnNama = Button(root, text="Choose File...", font=(font_title, 10), command=inputname, width=15)
 btnNama.grid(column=0, row=1)
-btnNama.place(relx=.6, rely=.4)
+btnNama.place(relx=.6, rely=.5)
 
 # directory penyimpanan fix
-btnDir = Button(root, text="Cari direktori..", font=(font_title, 10), command=savecert, width=15)
-btnDir.grid(column=0, row=1)
-btnDir.place(relx=.6, rely=.5)
+# btnDir = Button(root, text="Cari direktori..", font=(font_title, 10), command=savecert, width=15)
+# btnDir.grid(column=0, row=1)
+# btnDir.place(relx=.6, rely=.5)
 
 # generate!
-btnConfirm = Button(root, text="Generate!", font=(font_title, 10), command=generate_cert, bg="#029522", fg=fg_color, width=15)
-btnConfirm.grid(column=0, row=1)
-btnConfirm.place(relx=.5, rely=.7, anchor=CENTER)
+btnGenerate = Button(root, text="Generate!", font=(font_title, 10), command=cleanup_data, bg="#029522", fg=fg_color, width=15)
+btnGenerate.grid(column=0, row=1)
+btnGenerate.place(relx=.5, rely=.7, anchor=CENTER)
 
 # exit
-btnExit = Button(root, text="Keluar", font=(font_title, 10), command=keluar, bg="#FF0000", fg=fg_color, width=15)
+btnExit = Button(root, text="Exit", font=(font_title, 10), command=exit, bg="#FF0000", fg=fg_color, width=15)
 btnExit.grid(column=0, row=1)
 btnExit.place(relx=.5, rely=.8, anchor=CENTER)
 
