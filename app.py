@@ -4,7 +4,6 @@ import tkinter.filedialog as fd
 import tkinter.messagebox as mb
 import pyglet as pg
 import cv2
-import os
 
 # font
 pg.font.add_file('fonts//Poppins-Bold.ttf')
@@ -46,6 +45,7 @@ def inputcert():
 
 # input nama
 listName = []
+inputNama = "D:"
 def inputname():
     # try:
     inputNama = fd.askopenfilename(initialdir="/",
@@ -58,11 +58,12 @@ def inputname():
     # except:
         # mb.showerror("JENERET | Error","Something error")
 
-def cleanup_data():  
-    with open(inputname()) as f:
+def cleanup_data():
+    global inputNama
+    with open(inputNama) as f:
         for line in f:
             listName.append(line)
-
+            
 # generate!
 def generate_cert():
     # cleanup_data()
@@ -98,7 +99,7 @@ btnNama.place(relx=.6, rely=.5)
 # btnDir.place(relx=.6, rely=.5)
 
 # generate!
-btnGenerate = Button(root, text="Generate!", font=(font_title, 10), command=cleanup_data, bg="#029522", fg=fg_color, width=15)
+btnGenerate = Button(root, text="Generate!", font=(font_title, 10), command= lambda:cleanup_data(), bg="#029522", fg=fg_color, width=15)
 btnGenerate.grid(column=0, row=1)
 btnGenerate.place(relx=.5, rely=.7, anchor=CENTER)
 
