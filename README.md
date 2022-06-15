@@ -1,5 +1,6 @@
-# Tubes Alpro
+# JENERET
 
-1202210047
+Python-based certificate generator.
+
 - GUI : tkinter
 - Generator : OpenCV
