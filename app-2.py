@@ -2,7 +2,8 @@
 # Original code : https://github.com/GunarakulanGunaretnam/automatic-certificate-generator
 from tkinter import *
 from tkinter import colorchooser
-from tkinter import filedialog as fd
+from tkinter import filedialog
+import tkinter.filedialog as fd
 import tkinter.messagebox as mb
 import pyglet as pg
 import cv2
@@ -35,22 +36,22 @@ descApp.place(relx=0.5, rely=0.15, anchor=CENTER)
 # input file
 def inputcert():
     try:
-        inputCert = fd.askopenfilename(initialdir="C:/Users/Lenovo/OneDrive - Telkom University/Tel-U/Matkul/SEM 2/Alpro/TUBES/jadi", 
+        templateCert = fd.askopenfilename(initialdir="/", 
                                         title="Choose template", 
                                         filetypes=[("PNG", "*.png"),
                                         ("All Files", "*.*")])
         entryTemplate.delete(1, END)
-        entryTemplate.insert(0, inputCert)
+        entryTemplate.insert(0, templateCert)
     except FileNotFoundError:
         mb.showerror("JENERET | Error", "File not found :(")
     else:
-        return inputCert
+        return templateCert
 
 # input nama
 listName = []
 def inputname():
     try:
-        inputNama = fd.askopenfilename(initialdir="C:/Users/Lenovo/OneDrive - Telkom University/Tel-U/Matkul/SEM 2/Alpro/TUBES/jadi",
+        inputNama = fd.askopenfilename(initialdir="/",
                                     title="List Nama...", 
                                     filetypes=[("Text Document", "*.txt"),
                                     ("All Files", "*.*")])
@@ -63,44 +64,54 @@ def inputname():
 
 def pick():
     pickCol = colorchooser.askcolor()[0]
-    entryPick.delete(1, END)
-    entryPick.insert(0, pickCol)
     return pickCol
 
+def inputdir():
+    inputDir = filedialog.askopenfilename(initialdir="C:",
+                                          filetypes= (("text files","*.txt"),
+                                          ("all files","*.*")))
+    entryDir.delete(1, END)
+    entryDir.insert(0, inputDir)
+
+
+templatecert = StringVar()
+inputNama = StringVar()
+pickCol = StringVar()
 # append nama
 def appendList():
     inputNama = inputname()
     try:
-        with open(str(inputNama), "r+") as f:
+        with open(inputNama, "r+") as f:
             for line in f:
                 listName.append(line.strip())
     except FileNotFoundError:
         mb.showerror("JENERET", "File not yet selected")
-    else:
-        print("Success")
 
 # generate!
 def generateCert():
-    pickCol = pick()
+    # templateCert = inputcert()
+    # # inputDir = inputdir()
+    # pickCol = pick()
+
+    global templatecert
+    global pickCol
     print(pickCol)
-    inputCert = inputcert()
-    print(inputCert)
     try:
         for name in (listName):
-            final_cert = cv2.imread(str(inputCert))
+            final_cert = cv2.imread()
             cv2.putText(final_cert, str(name), (470,514), cv2.FONT_HERSHEY_DUPLEX, 3, pickCol, 5, cv2.LINE_AA)
             cv2.imwrite(f"C:/Users/Lenovo/OneDrive - Telkom University/Tel-U/Matkul/SEM 2/Alpro/TUBES/jadi/generated-cert/{str(name)}.png", final_cert)
+            # cv2.imwrite(f"{str(inputDir)}/{str(name)}.png", certificate_template_image)
     except:
         mb.showerror("JENERET | Error", "Something error, I can feel it")
     else:
         mb.showinfo("JENERET | Success","Certificate has been generated!")
-        print(pickCol)
+        # print(templatecert)
 
 # call
 def generate():
     appendList()
     generateCert()
-
 
 # keluar
 def exit():
@@ -128,11 +139,18 @@ btnName.place(relx=.6, rely=.42)
 
 labelCol = Label(root, text="Pick a color", font=(font_title, 10), bg=bg_color, fg=fg_color, padx=0, pady=0)
 labelCol.place(relx=.05, rely=.55)
-entryPick = Entry(root, text="", width=10)
-entryPick.place(relx=.4, rely=.55)
 btnCol = Button(root, text="Pick...", font=(font_title, 10), command=pick, width=15)
 btnCol.grid(column=0, row=1)
 btnCol.place(relx=.6, rely=.55)
+
+# insert directory
+labelDir = Label(root, text="Insert Directory", font=(font_title, 10), bg=bg_color, fg=fg_color, padx=0, pady=0)
+labelDir.place(relx=.05, rely=.65)
+entryDir = Entry(root, text="", width=35, font=(font_common, 8))
+entryDir.place(relx=.05, rely=.73)
+btnDir = Button(root, text="Browse...", font=(font_title, 10), command=inputdir, width=15)
+btnDir.grid(column=0, row=1)
+btnDir.place(relx=.6, rely=.7)
 
 # generate!
 btnGenerate = Button(root, text="Generate!", font=(font_title, 10), command= generate, bg="#029522", fg=fg_color, width=15)
